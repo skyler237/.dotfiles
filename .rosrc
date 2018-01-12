@@ -1,0 +1,16 @@
+source set_ros_master local
+export ROSLAUNCH_SSH_UNKNOWN=1
+
+# ROS_WORKSPACE
+source /opt/ros/kinetic/setup.bash
+# source ~/rel_nav_ws/devel/setup.bash
+# source ~/counter_uas/anti_uav_ws/devel/setup.bash
+# source ~/robot_soccer_ws/devel/setup.bash
+source ~/handoff/catkin_ws/devel/setup.bash
+# source ~/roslibjs_ws/devel/setup.bash
+# source ~/ros_pilot/devel/setup.bash
+# source ~/rosflight_ws/devel/setup.bash
+
+export GAZEBO_MODEL_PATH=$(rospack find handoff_sim)/models
+
+

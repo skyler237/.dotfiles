@@ -1,0 +1,196 @@
+alias fixCMake="rm CMakeLists.txt && cp /opt/ros/kinetic/share/catkin/cmake/toplevel.cmake CMakeLists.txt"
+alias is_flying="rostopic pub /is_flying std_msgs/Bool \"data: true\" "
+alias killgz="kill $(pgrep gz*) && kill $(pgrep gz*)"
+alias unpause_sim="rosservice call gazebo/unpause_physics"
+alias pause_sim="rosservice call gazebo/pause_physics"
+alias start_handoff="rostopic pub /handoff_mav/perform_handoff std_msgs/Bool 'data: true'"
+alias rosenv="printenv | grep ROS"
+takeoff_ardupilot() {
+python $(rospack find mavlink_comm)/scripts/takeoff.py $1
+}
+
+launch_ardupilot() {
+  sim_vehicle.py -v ArduPlane -f plane -L RockCanyon --map -I$1 --console -C --master 'tcp:127.0.0.1:5760'
+}
+
+launch_ardupilot_handoff() {
+	launch_ardupilot 1
+}
+
+launch_ardupilot_tracking() {
+  launch_ardupilot 0
+}
+
+launch_ardusim_rover() {
+	sim_vehicle.py -v APMrover2 -f rover -L RockCanyon --map -I3 --console -C --master 'tcp:127.0.0.1:5760'
+}
+
+publish_gimbal_control() {
+	rostopic pub /handoff_mav/gimbal/control geometry_msgs/Vector3Stamped "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+vector:
+  x: $1
+  y: $2
+  z: $3"
+}
+
+fixBag() {
+	rosbag reindex $1
+	rosbag fix $1 $2
+	rm *.orig.*
+	rm $1
+}
+
+alias fixAllBags="~/counter_uas/scripts/fixAllBags"
+rmtest() {
+	rm auto_test$1.bag
+	rm results$1.bag
+}
+
+##### Path aliases for benchmark testing ####
+#trignometry
+sin ()
+{
+    echo "scale=5;s($1)" | bc -l
+}
+
+cos ()
+{
+    echo "scale=5;c($1)" | bc -l
+}
+
+command_path() {
+	FLAG=$1
+	H=$2
+	CHI=$3
+	FLAG="false"
+	VA_D="20.0"
+	R="[0.0, 0.0, -$H]"
+
+	X=$(cos $CHI)
+	Y=$(sin $CHI)
+	Q="[$X, $Y, 0.0]"
+
+	C="[0.0, 0.0, -$H]"
+	RHO=$4
+	LAMBDA="0"
+
+	rostopic pub /tracking_mav/current_path rosplane_msgs/Current_Path "flag: $FLAG
+Va_d: $VA_D
+r: $R
+q: $Q
+c: $C
+rho: $RHO
+lambda_: $LAMBDA"
+
+	# rostopic pub /tracking_mav/current_path rosplane_msgs/Current_Path "'$FLAG' '$VA_D' '$R' '$Q' '$C' '$RHO' '$LAMBDA'"
+}
+
+publish_command() {
+Va_c=$1
+h_c=$2
+chi_c=$3
+phi_ff=$4
+
+rostopic pub -1 /tracking_mav/controller_commands rosplane_msgs/Controller_Commands "Va_c: $Va_c
+h_c: $h_c
+chi_c: $chi_c
+phi_ff: $phi_ff
+aux: [0.0, 0.0, 0.0, 0.0]
+aux_valid: false"
+
+}
+
+# TYPES =  line, orbit, altitude, chi (altitude and chi are square waves)
+path_benchmark() {
+	TYPE=$1
+
+	# Defualts
+	SLEEP_TIME=3.5
+	VA="20.0"
+	H="100.0"
+	CHI="0.0"
+	PHI="0.0"
+
+	if [ "$TYPE" = "line" ]; then
+		while true; do
+			publish_command $VA $H $CHI $PHI
+			sleep 3
+		done
+	elif [ "$TYPE" = "orbit" ]; then
+		PHI="0.453"
+		echo "Commanding Orbit"
+		while true; do
+			publish_command $VA $H $CHI $PHI
+			sleep 3
+		done
+	elif [ "$TYPE" = "Va" ]; then
+		while true; do
+			VA="30.0"
+			echo "Va = $VA"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			VA="20.0"
+			echo "Va = $VA"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			VA="15.0"
+			echo "Va = $VA"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			VA="20.0"
+			echo "Va = $VA"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+		done
+	elif [ "$TYPE" = "altitude" ]; then
+		while true; do
+			H="120.0"
+			echo "altitude = $H"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			H="100.0"
+			echo "altitude = $H"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+		done
+	elif [ "$TYPE" = "chi" ]; then
+		while true; do
+			CHI="1.57"
+			echo "chi = $CHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			CHI="0.0"
+			echo "chi = $CHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+		done
+	elif [ "$TYPE" = "phi" ]; then
+		ROLL_ANGLE="0.7"
+		while true; do
+			PHI="$ROLL_ANGLE"
+			echo "phi = $PHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			PHI="0.0"
+			echo "phi = $PHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			PHI="-$ROLL_ANGLE"
+			echo "phi = $PHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+			PHI="0.0"
+			echo "phi = $PHI"
+			publish_command $VA $H $CHI $PHI
+			sleep $SLEEP_TIME
+		done
+
+	else
+		echo "No matching benchmark of type: $TYPE"
+	fi
+}

@@ -1,0 +1,55 @@
+alias s="sublime"
+alias a="atom"
+alias srcbash="source ~/.bashrc"
+alias bashrc="sublime ~/.bashrc"
+alias aliases="sublime ~/.myaliases"
+alias rosrc="sublime ~/.rosrc"
+alias rosalias="sublime ~/.rosalias"
+alias matlab="matlab -softwareopengl &"
+alias autoTest="~/counter_uas/scripts/autoTest"
+alias autotest_results="cd ~/counter_uas/scripts/matlab/skyler/recent_tests/analysis/autotest"
+
+# Allows use of the ` character 
+alias bash_mode_on="sed -i -e 's/hide_window = grave/hide_window = <Primary>grave/g' ~/.config/terminator/config"
+
+# Returns use of ` to terminator
+alias bash_mode_off="sed -i -e 's/hide_window = <Primary>grave/hide_window = grave/g' ~/.config/terminator/config"
+
+pdf2png() {
+	PDF_FILE=$1
+	OUTPUT_FILE=$2
+	DENSITY_VAL=900 # Sets the dpi
+	QUALITY_VAL=100 # Sets the compression level (100 is no compression)
+
+	convert -density $DENSITY_VAL $PDF_FILE -quality $QUALITY_VAL $OUTPUT_FILE
+}
+
+tex2png() {
+	LATEX_FILE=$1
+
+	# Convert the latex file to pdf
+	pdflatex $LATEX_FILE
+
+	# Grab just the file name without the file type
+	FILENAME=`echo $LATEX_FILE | cut -d "." -f1`
+
+	# Convert pdf to png
+	pdf2png $FILENAME.pdf $FILENAME.png
+
+	# TYPES_TO_KEEP=".png .tex .pdf"
+	# COMMAND="grep $FILENAME"
+	# for type in $TYPES_TO_KEEP; do
+	# 	COMMAND="$COMMAND | grep -v $type"	
+	# 	echo $COMMAND
+	# done
+	FILES_TO_REMOVE=`ls | grep $FILENAME | grep -v .tex | grep -v .png`
+	rm $FILES_TO_REMOVE
+
+	IMAGE="$FILENAME".png
+	# Open the file upon creation
+	xdg-open $IMAGE
+}
+
+
+
+

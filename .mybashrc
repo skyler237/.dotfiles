@@ -1,0 +1,45 @@
+
+export GIT_PS1_SHOWDIRTYSTATE=1
+export PS1='\[\033[01;32m\]\u\[\033[01;34m\] \w\[\033[00;33m\]$(__git_ps1)\[\033[01;32m\] \$\[\033[00m\] '
+
+alias sbashrc='source ~/.bashrc'
+alias vbashrc='vim ~/.dotfiles/.mybashrc'
+alias vrosrc='vim ~/.dotfiles/.rosrc'
+
+libpathadd() {
+	    if [ -d "$1" ] && [[ ":$LD_LIBRARY_PATH:" != *":$1:"* ]]; then
+			        LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+"$LD_LIBRARY_PATH:"}$1"
+					    fi
+}
+libpathadd "/usr/local/lib"
+
+
+#Add Sublime to Path
+PATH=$PATH:/opt/sublime_text
+export PATH
+
+alias sub='sublime_text'
+alias sublime='sublime_text'
+alias rm=trash
+
+
+source ~/.dotfiles/.rosrc
+source ~/.dotfiles/.rosalias
+source ~/.dotfiles/.myaliases
+export PATH=$PATH:/opt/gcc-arm-none-eabi-5_3-2016q1/bin
+export PATH=/opt/gcc-arm-none-eabi-4_7-2014q2/bin:$PATH
+
+export WORKON_HOME=$HOME/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+#export PROJECT_HOME=$HOME/directory-you-do-development-in
+source /usr/local/bin/virtualenvwrapper.sh
+export PATH=/opt/gcc-arm-none-eabi-4_7-2014q2/bin:/opt/ros/kinetic/bin:/home/skyler/bin:/home/skyler/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/java/jre1.8.0_131/bin:/usr/local/java/jdk1.8.0_131/bin:/opt/sublime_text:/opt/gcc-arm-none-eabi-5_3-2016q1/bin:/home/skyler/.local/bin
+
+# Ardupilot stuff
+export PATH=$PATH:$HOME/ardupilot/Tools/autotest
+export PATH=$PATH:$HOME/jsbsim/src
+export PATH=/usr/lib/ccache:$PATH
+
+# Holodeck stuff
+export HOLODECKPATH="/usr/local/Holodeck"
+export PYTHONPATH="${HOLODECKPATH}:${PYTHONPATH}"
