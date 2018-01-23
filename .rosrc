@@ -10,6 +10,7 @@ source ~/handoff/catkin_ws/devel/setup.bash
 # source ~/roslibjs_ws/devel/setup.bash
 # source ~/ros_pilot/devel/setup.bash
 # source ~/rosflight_ws/devel/setup.bash
+source ~/school/ecen631/camera_calibration/devel/setup.bash
 
 export GAZEBO_MODEL_PATH=$(rospack find handoff_sim)/models
 
