@@ -7,6 +7,10 @@ alias rosalias="sublime ~/.dotfiles/.rosalias"
 alias matlab="matlab -softwareopengl &"
 alias autoTest="~/counter_uas/scripts/autoTest"
 alias autotest_results="cd ~/counter_uas/scripts/matlab/skyler/recent_tests/analysis/autotest"
+alias ssh_tx2="ssh nvidia@192.168.48.101"
+alias remote_handoff="sshfs nvidia@tx2:/home/nvidia/handoff /home/skyler/remote"
+alias matlab="/usr/local/MATLAB/R2017a/bin/matlab"
+
 
 # Allows use of the ` character 
 alias bash_mode_on="sed -i -e 's/hide_window = grave/hide_window = <Primary>grave/g' ~/.config/terminator/config"
