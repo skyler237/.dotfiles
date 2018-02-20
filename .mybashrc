@@ -42,4 +42,5 @@ export PATH=/usr/lib/ccache:$PATH
 
 # Holodeck stuff
 export HOLODECKPATH="/usr/local/Holodeck"
-export PYTHONPATH="${HOLODECKPATH}:${PYTHONPATH}"
+export ECEN631_WS="/home/skyler/school/ecen631"
+export PYTHONPATH="${HOLODECKPATH}:${ECEN631_WS}:${PYTHONPATH}"
