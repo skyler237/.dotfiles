@@ -45,7 +45,20 @@ fixBag() {
 	rm $1
 }
 
-alias fixAllBags="~/counter_uas/scripts/fixAllBags"
+fixAllBags() {
+	pattern="*.bag.active"
+	files=( $pattern )
+	cnt="${#files[@]}"
+	
+	for (( i=0; i<${cnt}; i++ ));
+	do
+		filename=${files[i]}
+		new_name=`echo $filename | cut -d "." -f -2`
+	
+		fixBag $filename $new_name 
+	done
+}
+
 rmtest() {
 	rm auto_test$1.bag
 	rm results$1.bag
